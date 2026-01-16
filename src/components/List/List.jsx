@@ -5,17 +5,18 @@ import Card from '../Card/Card';
 import AddCard from '../Card/AddCard';
 import './List.css';
 
+// Trello's exact color mapping: chip color -> lighter applied background
 const LIST_COLORS = [
-  { name: 'green', color: '#4BCE97' },
-  { name: 'yellow', color: '#EED12B' },
-  { name: 'orange', color: '#FCA700' },
-  { name: 'red', color: '#F87168' },
-  { name: 'purple', color: '#C97CF4' },
-  { name: 'blue', color: '#669DF1' },
-  { name: 'teal', color: '#6CC3E0' },
-  { name: 'lime', color: '#94C748' },
-  { name: 'magenta', color: '#E774BB' },
-  { name: 'gray', color: '#8C8F97' },
+  { name: 'green', chip: '#4BCE97', background: '#BAF3DB' },
+  { name: 'yellow', chip: '#EED12B', background: '#F5E989' },
+  { name: 'orange', chip: '#FCA700', background: '#FCE4A6' },
+  { name: 'red', chip: '#F87168', background: '#FFD5D2' },
+  { name: 'purple', chip: '#C97CF4', background: '#EED7FC' },
+  { name: 'blue', chip: '#669DF1', background: '#CFE1FD' },
+  { name: 'teal', chip: '#6CC3E0', background: '#C6EDFB' },
+  { name: 'lime', chip: '#94C748', background: '#D3F1A7' },
+  { name: 'magenta', chip: '#E774BB', background: '#FDD0EC' },
+  { name: 'gray', chip: '#8C8F97', background: '#F1F2F4' },
 ];
 
 const List = ({ list, index }) => {
@@ -69,11 +70,11 @@ const List = ({ list, index }) => {
     setShowMenu(false);
   };
 
-  const handleColorChange = async (color) => {
-    setListColor(color);
-    // Update list in backend if needed
+  const handleColorChange = async (colorObj) => {
+    // Store the chip color as the color identifier, but apply the background
+    setListColor(colorObj.chip);
     try {
-      await updateList(list.id, { color });
+      await updateList(list.id, { color: colorObj.chip });
     } catch (err) {
       console.error('Failed to update list color:', err);
     }
@@ -90,10 +91,14 @@ const List = ({ list, index }) => {
 
   const filteredCards = getFilteredCards(list.cards || []);
 
-  // Get background color for list
+  // Get background color for list - find the lighter version
   const getListBackground = () => {
     if (listColor) {
-      return listColor;
+      const colorObj = LIST_COLORS.find(c => c.chip === listColor);
+      if (colorObj) {
+        return colorObj.background; // Use lighter background
+      }
+      return listColor; // Fallback for custom colors
     }
     return '#f1f2f4'; // Default grey
   };
@@ -161,9 +166,9 @@ const List = ({ list, index }) => {
                       {LIST_COLORS.map((c) => (
                         <button
                           key={c.name}
-                          className={`list-color-chip ${listColor === c.color ? 'active' : ''}`}
-                          style={{ backgroundColor: c.color }}
-                          onClick={() => handleColorChange(c.color)}
+                          className={`list-color-chip ${listColor === c.chip ? 'active' : ''}`}
+                          style={{ backgroundColor: c.chip }}
+                          onClick={() => handleColorChange(c)}
                           aria-label={c.name}
                           title={c.name}
                         />
@@ -176,7 +181,7 @@ const List = ({ list, index }) => {
                       <input
                         type="color"
                         id="list-color-input"
-                        onChange={(e) => handleColorChange(e.target.value)}
+                        onChange={(e) => handleColorChange({ chip: e.target.value, background: e.target.value })}
                       />
                     </div>
                     
