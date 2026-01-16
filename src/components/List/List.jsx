@@ -7,7 +7,7 @@ import './List.css';
 
 const LIST_COLORS = [
   { name: 'green', color: '#4BCE97' },
-  { name: 'yellow', color: '#F5CD47' },
+  { name: 'yellow', color: '#EED12B' },
   { name: 'orange', color: '#FCA700' },
   { name: 'red', color: '#F87168' },
   { name: 'purple', color: '#C97CF4' },
