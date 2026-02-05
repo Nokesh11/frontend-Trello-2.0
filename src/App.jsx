@@ -22,7 +22,9 @@ function App() {
       const data = await boardApi.getAll();
       setBoards(data);
       if (data.length > 0 && !selectedBoardId) {
-        setSelectedBoardId(data[0].id);
+        // Default to "Product Development Sprint" board, or first board if not found
+        const defaultBoard = data.find(b => b.title === 'Product Development Sprint');
+        setSelectedBoardId(defaultBoard ? defaultBoard.id : data[0].id);
       }
     } catch (err) {
       console.error('Failed to fetch boards:', err);
